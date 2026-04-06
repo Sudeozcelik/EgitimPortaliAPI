@@ -38,5 +38,7 @@ namespace EgitimPortali.API.Controllers
             await _repo.DeleteLessonAsync(id);
             return Ok("Ders silindi.");
         }
+
+        
     }
 }

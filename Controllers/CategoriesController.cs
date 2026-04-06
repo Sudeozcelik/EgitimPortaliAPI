@@ -15,7 +15,6 @@ namespace EgitimPortali.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _repo.GetAllCategoriesAsync());
 
-        // Tek bir kategori (ID ile Getir)
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -23,7 +22,6 @@ namespace EgitimPortali.API.Controllers
             return category == null ? NotFound("Kategori bulunamadı!") : Ok(category);
         }
 
-        // Yeni Ekle
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Category category)
         {
@@ -31,7 +29,6 @@ namespace EgitimPortali.API.Controllers
             return Ok("Kategori başarıyla eklendi.");
         }
 
-        // Güncelle (ID ile)
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] Category category)
         {
@@ -40,7 +37,6 @@ namespace EgitimPortali.API.Controllers
             return Ok($"{id} numaralı kategori güncellendi.");
         }
 
-        // Sil (ID ile)
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

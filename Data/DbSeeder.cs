@@ -1,42 +1,44 @@
 using EgitimPortali.API.Models;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks; // Bu satır önemli
 
 namespace EgitimPortali.API.Data
 {
     public static class DbSeeder
     {
+        // İsmi "SeedAsync" yaptık ve "Task" ekledik ki hata çözülsün
         public static async Task SeedAsync(AppDbContext context)
         {
-            // 1. Önce kategorileri garantiye alalım
-            if (!await context.Categories.AnyAsync())
+            // Veritabanı yoksa oluşturur (Asenkron versiyonu)
+            await context.Database.EnsureCreatedAsync();
+
+            // 1. ADMİN KULLANICI EKLEME
+            if (!context.Users.Any(u => u.Role == "Admin"))
             {
-                var cats = new List<Category>
+                var adminUser = new AppUser
                 {
-                    new Category { Name = "Yazılım", Description = "Yazılım eğitimleri." },
-                    new Category { Name = "Tasarım", Description = "Tasarım eğitimleri." }
+                    FirstName = "Sistem",
+                    LastName = "Yoneticisi",
+                    Email = "admin@egitim.com",
+                    UserName = "admin@egitim.com",
+                    Role = "Admin",
+                    EmailConfirmed = true
                 };
-                await context.Categories.AddRangeAsync(cats);
-                await context.SaveChangesAsync();
+
+                adminUser.PasswordHash = "admin123"; 
+
+                context.Users.Add(adminUser);
             }
 
-            // 2. Şimdi kursu ekleyelim ama önce kategorinin ID'sini bulalım
-            if (!await context.Courses.AnyAsync())
+            // 2. ÖRNEK KATEGORİ EKLEME
+            if (!context.Categories.Any())
             {
-                var firstCat = await context.Categories.FirstOrDefaultAsync();
-                
-                if (firstCat != null) // Kategori varsa ekle
-                {
-                    await context.Courses.AddAsync(new Course
-                    {
-                        Title = ".NET Core Giriş",
-                        Description = "Örnek Kurs",
-                        Price = 100,
-                        CategoryId = firstCat.Id,
-                        InstructorId = null // Burası kritik: Nullable olduğunu SQL'e gösteriyoruz
-                    });
-                    await context.SaveChangesAsync();
-                }
+                context.Categories.Add(new Category { Name = "Yazılım" });
+                context.Categories.Add(new Category { Name = "Tasarım" });
             }
+
+            // Değişiklikleri kaydet (Asenkron versiyonu)
+            await context.SaveChangesAsync();
         }
     }
 }

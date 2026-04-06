@@ -1,15 +1,18 @@
 using EgitimPortali.API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EgitimPortali.API.Data
 {
-    public class AppDbContext : IdentityDbContext<AppUser>
+    // AppUser ve Roller için int tipinde anahtar (ID) kullanıyoruz.
+    public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
+        // Tablolarımız
         public DbSet<Category> Categories { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
@@ -21,13 +24,8 @@ namespace EgitimPortali.API.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(builder); // Identity yapısı için bu satır zorunludur.
-
-            // SQL Server'da ilişkili tablolar silinirken yaşanabilecek çakışma hatalarını (Cascade Delete) önlemek için kısıtlama getiriyoruz:
-            foreach (var relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
+            base.OnModelCreating(builder);
+            // Burada gerekirse tablo isimlerini özelleştirebilirsin.
         }
     }
 }

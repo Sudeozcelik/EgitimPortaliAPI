@@ -25,7 +25,6 @@ namespace EgitimPortali.API.Controllers
             return course == null ? NotFound("Kurs bulunamadı!") : Ok(course);
         }
 
-        // Yeni Kurs Ekle
         [HttpPost]
         public async Task<IActionResult> AddCourse([FromBody] Course course)
         {
@@ -34,7 +33,6 @@ namespace EgitimPortali.API.Controllers
             return Ok("Kurs başarıyla eklendi.");
         }
 
-        // Güncelle (ID ile)
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCourse(int id, [FromBody] Course course)
         {
@@ -44,7 +42,6 @@ namespace EgitimPortali.API.Controllers
             return Ok($"{id} numaralı kurs güncellendi.");
         }
 
-        // Sil (ID ile)
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCourse(int id)
         {
