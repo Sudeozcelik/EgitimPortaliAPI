@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc;      // En kritik satır bu!
-using EgitimPortali.API.Models;       // Bu satırı ekledik
-using EgitimPortali.API.Repositories; // Bu satırı ekledik
+using Microsoft.AspNetCore.Mvc;      
+using EgitimPortali.API.Models;       
+using EgitimPortali.API.Repositories; 
 using System.Threading.Tasks;
 
 namespace EgitimPortali.API.Controllers
@@ -10,12 +10,20 @@ namespace EgitimPortali.API.Controllers
     public class LessonsController : ControllerBase
     {
         private readonly ILessonRepository _repo;
-        public ILessonRepository Get_repo() => _repo;
 
         public LessonsController(ILessonRepository repo) => _repo = repo;
 
+        // ÇÖZÜM BURADA: Bu metot bir API ucu değil, sadece bir yardımcı metot.
+        // Swagger'ın kafasının karışmaması için [NonAction] ekliyoruz.
+        [NonAction]
+        public ILessonRepository Get_repo() => _repo;
+
         [HttpGet("course/{courseId}")]
-        public async Task<IActionResult> GetByCourse(int courseId) => Ok(await _repo.GetLessonsByCourseIdAsync(courseId));
+        public async Task<IActionResult> GetByCourse(int courseId) 
+        {
+            var lessons = await _repo.GetLessonsByCourseIdAsync(courseId);
+            return Ok(lessons);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Lesson lesson)
@@ -38,7 +46,5 @@ namespace EgitimPortali.API.Controllers
             await _repo.DeleteLessonAsync(id);
             return Ok("Ders silindi.");
         }
-
-        
     }
 }
